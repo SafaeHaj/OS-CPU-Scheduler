@@ -1,5 +1,6 @@
 #include <vector>
 #include <unordered_map>
+#include "Process.h"
 
 class Scheduler {
     protected:
