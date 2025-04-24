@@ -3,19 +3,6 @@
 #include "Process.h"
 
 class Scheduler {
-    protected:
-        std::vector<Process> processes;  
-        Process* current_process = nullptr;
-        int current_time = 0;
-        Metrics metrics;
-
-    public:
-        virtual void schedule() = 0; // virtual method that will be overridden in derived classes
-        void run_simulation();        
-        void calculate_metrics(); // to define later on     
-    };
-
-
     struct Metrics {
         struct ProcessStats {
             int waiting_time;
@@ -27,7 +14,7 @@ class Scheduler {
         float cpu_utilization;
         int total_idle_time;
     
-        std::unordered_map<int, ProcessStats> process_details;
+        std::unordered_map<int, ProcessStats> process_details; // map each process ID to its stats
     
         void reset() {
             avg_waiting_time = 0.0f;
@@ -37,3 +24,14 @@ class Scheduler {
             process_details.clear();
         }
     };
+
+    protected:
+        std::vector<Process> processes;  
+        Process* current_process = nullptr;
+        int current_time = 0;
+        Metrics metrics;
+
+    public:
+        virtual void schedule() = 0; // virtual method that will be overridden in derived classes
+        void calculate_metrics(); // to define later on     
+};
