@@ -13,10 +13,11 @@ class Process {
   int turnaround_time;
   int completion_time;
 
+  Process(int id, int arrival_time, int burst_time, int priority);
+
 
   public:
 
-  Process(int id, int at, int bt, int prio);
 
   // Getters 
 
@@ -31,10 +32,6 @@ class Process {
 
 
 };
-
-
-
-
 
 
 
