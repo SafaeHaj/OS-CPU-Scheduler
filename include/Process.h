@@ -13,7 +13,7 @@ class Process {
   int turnaround_time;
   int completion_time;
 
-  Process(int id, int arrival_time, int burst_time, int priority);
+  
 
 
   public:
@@ -29,6 +29,13 @@ class Process {
     int getWaitingTime() const;
     int getTurnaroundTime() const;
     int getCompletionTime() const;
+    void setRemainingTime(int rt);
+    void updateWaitingTime(int wt); 
+    void setCompletionTime(int ct);
+    void setTurnaroundTime(int tt); 
+    void setWaitingTime(int wt);
+
+    Process(int id, int arrival_time, int burst_time, int priority);
 
 
 };

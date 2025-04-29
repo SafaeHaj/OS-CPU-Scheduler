@@ -22,3 +22,5 @@ void Process::setCompletionTime(int ct) {
     completion_time = ct;
     turnaround_time = completion_time - arrival_time;
 }
+void Process::setTurnaroundTime(int tt) { turnaround_time = tt; }
+void Process::setWaitingTime(int wt) { waiting_time = wt; } 
