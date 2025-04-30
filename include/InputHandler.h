@@ -16,6 +16,9 @@ public:
                                                       int min_burst,
                                                       int max_burst,
                                                       int max_priority);
+    
+    // Read input from GUI
+    static std::vector<Process> readGUI();
 };
 
 #endif // INPUT_HANDLER_H

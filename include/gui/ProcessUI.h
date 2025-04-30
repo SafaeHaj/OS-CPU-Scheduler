@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "../../include/Process.h"
+#include "../Process.h"
 
 class ProcessUI {
 public:
@@ -13,6 +13,9 @@ public:
 
     ProcessUI(Process* process, float x, float y, float width, float height, sf::Font& font);
 
+    void nextBlock(int index);
+    void setCompletionTime(int time);
+    void clearBlocks();
     void draw(sf::RenderWindow& window);
 
 private:

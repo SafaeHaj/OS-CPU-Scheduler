@@ -1,11 +1,10 @@
-#pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <string>
 #include <functional>
-#include "DropDownMenu.h"
+#include "gui/DropDownMenu.h"
 
-DropdownMenu::DropdownMenu(sf::Vector2f pos, float width, std::vector<std::string> options, sf::Font &font)
+DropDownMenu::DropDownMenu(sf::Vector2f pos, float width, std::vector<std::string> options, sf::Font &font)
     : font(font)
 {
     baseButton.setSize(sf::Vector2f(width, itemHeight));
@@ -35,7 +34,7 @@ DropdownMenu::DropdownMenu(sf::Vector2f pos, float width, std::vector<std::strin
     }
 }
 
-void DropdownMenu::handleEvent(sf::Event &event, sf::Vector2f mousePos)
+void DropDownMenu::handleEvent(sf::Event &event, sf::Vector2f mousePos)
 {
     if (event.type == sf::Event::MouseButtonPressed &&
         event.mouseButton.button == sf::Mouse::Left)
@@ -63,7 +62,7 @@ void DropdownMenu::handleEvent(sf::Event &event, sf::Vector2f mousePos)
     }
 }
 
-void DropdownMenu::draw(sf::RenderWindow &window)
+void DropDownMenu::draw(sf::RenderWindow &window)
 {
     window.draw(baseButton);
     window.draw(baseText);
@@ -77,7 +76,7 @@ void DropdownMenu::draw(sf::RenderWindow &window)
     }
 }
 
-std::string DropdownMenu::getSelectedItem() const
+std::string DropDownMenu::getSelectedItem() const
 {
     return selectedItem;
 }

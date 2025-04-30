@@ -49,3 +49,7 @@ std::vector<Process> InputHandler::generateRandomProcesses(int count,
     }
     return processes;
 }
+
+std::vector<Process> InputHandler::readGUI() {
+    // wip
+}

@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-class DropdownMenu {
+class DropDownMenu {
 private:
     sf::RectangleShape baseButton;
     sf::Text baseText;
@@ -16,7 +16,7 @@ private:
     std::string selectedItem = "Select Algorithm";
 
 public:
-    DropdownMenu(sf::Vector2f pos, float width, std::vector<std::string> options, sf::Font& font);
+    DropDownMenu(sf::Vector2f pos, float width, std::vector<std::string> options, sf::Font& font);
 
     void handleEvent(sf::Event& event, sf::Vector2f mousePos);
     void draw(sf::RenderWindow& window);
