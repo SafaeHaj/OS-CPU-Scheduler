@@ -1,46 +1,57 @@
-#include "Scheduler.h"
-#include "Process.h"
+#include "RR.h"
 #include <queue>
+#include <algorithm>
+#include <iostream>
 
-class RR: public Scheduler {
-    private:
-    int quantum;
-    std::queue<Process> process_queue;
+void RR::schedule() {
+    std::queue<Process*> ready_queue;
+    std::size_t idx = 0;
 
-    public:
-    RR(int quantum) : quantum(quantum) {}
-    // code still in progress, might have to further modify Process class to better implement the cut program behavior
-    /*
-    void schedule() override {
-        for (const auto& process : this->processes) {
-            process_queue.push(process);
+    // Sort processes by arrival time
+    std::sort(processes.begin(), processes.end(), 
+        [](const Process& a, const Process& b) {
+            return a.getArrivalTime() < b.getArrivalTime();
+        });
+
+    current_time = 0;
+    while (idx < processes.size() || !ready_queue.empty()) {
+        // Add arriving processes to the queue
+        while (idx < processes.size() && processes[idx].getArrivalTime() <= current_time) {
+            ready_queue.push(&processes[idx]);
+            idx++;
         }
 
-        while (!process_queue.empty()) {
-            Process current_process = process_queue.front();
-            int start_time = time.now();
+        if (ready_queue.empty()) {
+            current_time = processes[idx].getArrivalTime();
+            continue;
+        }
 
-            while (time.now() - start_time < quantum && current_process.remaining_time > 0) { // this doesnt actually work
-                current_process.execute();
-                if (time.now() - start_time >= quantum) {
-                    break;
-                }
-            }
+        Process* p = ready_queue.front();
+        ready_queue.pop();
 
-            process_queue.pop();
+        int exec_time = std::min(time_quantum, p->getRemainingTime());
+        timeline.emplace_back(p->getId(), current_time, current_time + exec_time);
 
-            if (current_process.remaining_time > quantum) {
-                current_process.remaining_time -= quantum;
-                current_time += quantum;
-                process_queue.push(current_process);
-            } else {
-                current_time += current_process.remaining_time;
-                current_process.remaining_time = 0;
-                current_process.is_completed = true;
-                this->calculate_metrics();
-            }
+        // Update remaining time
+        p->setRemainingTime(p->getRemainingTime() - exec_time);
+        current_time += exec_time;
 
+        // Re-add to queue if not finished
+        if (p->getRemainingTime() > 0) {
+            ready_queue.push(p);
+        } else {
+            p->setCompletionTime(current_time);
+            p->setTurnaroundTime(p->getCompletionTime() - p->getArrivalTime());
+            p->setWaitingTime(p->getTurnaroundTime() - p->getBurstTime());
         }
     }
-    */
-};
+}
+
+void RR::print_gantt_chart() {
+    std::cout << "Round Robin Gantt Chart (Time Quantum = " << time_quantum << "):\n";
+    for (const auto& entry : timeline) {
+        std::cout << "[P" << std::get<0>(entry) << "] "
+                  << std::get<1>(entry) << "-" << std::get<2>(entry) << " | ";
+    }
+    std::cout << "\n";
+}

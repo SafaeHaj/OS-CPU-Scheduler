@@ -4,23 +4,27 @@ CXXFLAGS = -Wall -Iinclude -Isrc/gui
 
 # Directories
 SRC_DIR = src
+CORE_DIR = src/core
 GUI_DIR = src/gui
 BUILD_DIR = build
 BIN_DIR = bin
+CORE_BIN_DIR = $(BIN_DIR)/core
+GUI_BIN_DIR = $(BIN_DIR)/gui
 
 # Source files
-SRCS = main.cpp $(GUI_DIR)/ProcessUIManager.cpp $(GUI_DIR)/ProcessUI.cpp $(GUI_DIR)/DropDownMenu.cpp
+SRCS = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(GUI_DIR)/*.cpp) $(wildcard $(CORE_DIR)/*.cpp)
 OBJS = $(SRCS:.cpp=.o)
 OBJ_PATHS = $(patsubst %.o,$(BUILD_DIR)/%.o,$(notdir $(OBJS)))
 
 # Executable name
-TARGET = $(BIN_DIR)/main
+TARGET = $(GUI_BIN_DIR)/main
+EXEC = $(CORE_BIN_DIR)/scheduler
 
 # Default target
-all: $(TARGET)
+all: $(TARGET) $(EXEC)
 
 # Linking
-$(TARGET): $(OBJ_PATHS) | $(BIN_DIR)
+$(TARGET): $(OBJ_PATHS) | $(GUI_BIN_DIR)
 	$(CXX) $^ -o $@ -lsfml-graphics -lsfml-window -lsfml-system
 
 # Compilation
@@ -30,12 +34,21 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
 $(BUILD_DIR)/%.o: $(GUI_DIR)/%.cpp | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+$(EXEC): $(OBJ)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
 # Ensure output directories exist
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
+
+$(CORE_BIN_DIR):
+	mkdir -p $(CORE_BIN_DIR)
+
+$(GUI_BIN_DIR):
+	mkdir -p $(GUI_BIN_DIR)
 
 # Clean
 clean:
