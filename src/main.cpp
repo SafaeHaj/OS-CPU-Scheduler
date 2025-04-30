@@ -4,8 +4,12 @@
 #include <stdexcept>
 #include "InputHandler.h"
 #include "Scheduler.h"
+#include "Process.h"
 #include "FCFS.h"
+#include "SJF.h"
+#include "Priority.h"
 #include "RR.h"
+#include "PriorityRR.h"
 
 // Forward declarations
 void displayMainMenu();
@@ -73,21 +77,34 @@ std::unique_ptr<Scheduler> selectScheduler() {
     int choice;
     std::cout << "\n=== Scheduling Algorithms ===\n"
               << "1. FCFS (First-Come First-Served)\n"
-              << "4. Round Robin (RR)\n"  // Only list implemented schedulers
+              << "2. SJF (Shortest Job First)\n"
+              << "3. Priority Scheduling\n"
+              << "4. Round Robin (RR)\n"
+              << "5. Priority with Round Robin\n"
               << "Enter your choice: ";
     std::cin >> choice;
 
     switch(choice) {
         case 1: return std::make_unique<FCFS>();
+        case 2: return std::make_unique<SJF>();
+        case 3: return std::make_unique<Priority>();
         case 4: {
             int quantum;
             std::cout << "Enter time quantum: ";
             std::cin >> quantum;
             return std::make_unique<RR>(quantum);
         }
+        case 5: {
+            int quantum;
+            std::cout << "Enter time quantum: ";
+            std::cin >> quantum;
+            return std::make_unique<PriorityRR>(quantum);
+        }
         default: throw std::invalid_argument("Invalid scheduler choice");
     }
 }
+
+
 
 void printMetrics(const Metrics& metrics) {
     std::cout << "\n=== Performance Metrics ===\n"
