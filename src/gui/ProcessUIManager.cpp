@@ -2,6 +2,7 @@
 #include <vector>
 #include "gui/ProcessUIManager.h"
 #include "gui/ProcessUI.h"
+#include "gui/Layout.h"
 
 ProcessUIManager::ProcessUIManager(float x, float y, sf::Font &font)
     : x(x), y(y), font(font) {
@@ -12,7 +13,7 @@ ProcessUIManager::ProcessUIManager(float x, float y, sf::Font &font)
 void ProcessUIManager::initText(sf::Text& text, const std::string& str, float x, float y) {
     text.setFont(font);
     text.setString(str);
-    text.setCharacterSize(16);
+    text.setCharacterSize(CHAR_SIZE);
     text.setFillColor(sf::Color::White);
     text.setPosition(x, y);
 }
@@ -20,61 +21,59 @@ void ProcessUIManager::initText(sf::Text& text, const std::string& str, float x,
 void ProcessUIManager::initHeader(sf::Text& text, const std::string& str, float x, float y, float customWidth) {
     text.setFont(font);
     text.setString(str);
-    text.setCharacterSize(18);
+    text.setCharacterSize(CHAR_SIZE);
     text.setFillColor(sf::Color::Black);
     text.setPosition(x, y);
 
-    float padding = 30.0f;
     sf::RectangleShape background;
     // Use customWidth if provided, otherwise calculate based on text
-    float width = (customWidth > 0) ? customWidth : (text.getLocalBounds().width + padding);
-    background.setSize(sf::Vector2f(width, 40));
+    float width = (customWidth > 0) ? customWidth : (text.getLocalBounds().width + PADDING);
+    background.setSize(sf::Vector2f(width, HEADER_HEIGHT));
     background.setFillColor(sf::Color::White);
-    background.setPosition(x - padding / 2, y - padding / 2);
+    background.setPosition(x - PADDING / 2, y - PADDING / 2);
     headerBackgrounds.push_back(background);
 }
 
-void ProcessUIManager::initHeaders(){
+void ProcessUIManager::initHeaders() {
     std::string titles[5] = {"Priority", "Burst Time", "Arrival", "Simulation", "Time"};
     float currentX = x;
-    float gap = 5.0f; 
-    float padding = 50.0f;
-    float minSimulationWidth = 280.0f; 
 
     for (int i = 0; i < 5; ++i) {
         if (titles[i] == "Simulation") {
             sf::Text tempText;
             tempText.setFont(font);
             tempText.setString(titles[i]);
-            tempText.setCharacterSize(18);
-            float textWidth = tempText.getLocalBounds().width + padding;
-            float totalWidth = std::max(textWidth, minSimulationWidth);
+            tempText.setCharacterSize(CHAR_SIZE);
+            float textWidth = tempText.getLocalBounds().width + PADDING;
+            float totalWidth = std::max(textWidth, SIM_WIDTH);
             initHeader(headers[i], titles[i], currentX, y, totalWidth);
+        } else if (titles[i] == "Time") {
+            initHeader(headers[i], titles[i], currentX, y, TIME_WIDTH);
         } else {
-            initHeader(headers[i], titles[i], currentX, y);
+            initHeader(headers[i], titles[i], currentX, y, FIELD_WIDTH);
         }
 
         // Update currentX for next header (current width + gap)
         float headerWidth = headerBackgrounds.back().getSize().x;
-        currentX += headerWidth + gap;
+        currentX += headerWidth + COLUMN_GAP;
     }
 }
 
-void ProcessUIManager::initAvgBox(){
-    avgBox.setSize(sf::Vector2f(100, 30));
+void ProcessUIManager::initAvgBox() {
+    avgBox.setSize(sf::Vector2f(FIELD_WIDTH, FIELD_HEIGHT));
     avgBox.setFillColor(sf::Color::Black);
     avgBox.setOutlineColor(sf::Color::White);
     avgBox.setOutlineThickness(1.f);
     avgBox.setPosition(600, 500);
 
     avgTurnaroundText.setFont(font);
-    avgTurnaroundText.setCharacterSize(16);
+    avgTurnaroundText.setCharacterSize(CHAR_SIZE);
     avgTurnaroundText.setFillColor(sf::Color::White);
     avgTurnaroundText.setString("Avg. Turnaround Time:");
     avgTurnaroundText.setPosition(460, 505);
 
     avgValueText.setFont(font);
-    avgValueText.setCharacterSize(16);
+    avgValueText.setCharacterSize(CHAR_SIZE);
     avgValueText.setFillColor(sf::Color::White);
     avgValueText.setPosition(610, 505);
     avgValueText.setString("0.0 ms");
@@ -82,11 +81,11 @@ void ProcessUIManager::initAvgBox(){
 
 void ProcessUIManager::setProcesses(const std::vector<Process *> &processes) {
     processRows.clear();
-    float yOffset = y + 40;
+    float yOffset = y + HEADER_HEIGHT;
     for (auto &proc : processes) {
-        ProcessUI row = ProcessUI(proc, x-15, yOffset, 720, 60, font);
+        ProcessUI row = ProcessUI(proc, x - PADDING, yOffset, FIELD_WIDTH * 3.6f, ROW_HEIGHT, font);
         processRows.emplace_back(row);
-        yOffset += 60;
+        yOffset += ROW_HEIGHT;
     }
 }
 

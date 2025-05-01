@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "gui/ProcessUI.h"
+#include "gui/Layout.h"
 
 ProcessUI::ProcessUI(Process* process, float x, float y, float width, float height, sf::Font& font)
     : process(process), font(font) {
@@ -10,15 +11,15 @@ ProcessUI::ProcessUI(Process* process, float x, float y, float width, float heig
     background.setOutlineThickness(1.f);
     background.setPosition(x, y);
 
-    initText(priorityText, std::to_string(process->priority), x + 40, y + 15);
-    initText(burstText, std::to_string(process->burst_time) + " ms", x + 140, y + 15);
-    initText(arrivalText, std::to_string(process->arrival_time) + " ms", x + 280, y + 15);
-    initText(timeText, std::to_string(0) + " ms", x + 650, y + 15);
+    initText(priorityText, std::to_string(process->priority), x + PADDING, y + PADDING);
+    initText(burstText, std::to_string(process->burst_time) + " ms", x + FIELD_WIDTH + PADDING, y + PADDING);
+    initText(arrivalText, std::to_string(process->arrival_time) + " ms", x + 2 * FIELD_WIDTH + PADDING, y + PADDING);
+    initText(timeText, std::to_string(0) + " ms", x + SIM_WIDTH + TIME_WIDTH + PADDING, y + PADDING);
 
-    float simStartX = x + 365;
+    float simStartX = x + 2 * FIELD_WIDTH + TIME_WIDTH + PADDING + COLUMN_GAP;
     for (int i = 0; i < 12; ++i) {
-        sf::RectangleShape block(sf::Vector2f(20, 30));
-        block.setPosition(simStartX + i * 22, y + 10);
+        sf::RectangleShape block(sf::Vector2f(FIELD_HEIGHT / 2, FIELD_HEIGHT * 0.6f));
+        block.setPosition(simStartX + i * (FIELD_HEIGHT / 2 + COLUMN_GAP), y + PADDING);
         block.setFillColor(sf::Color::Black);
         block.setOutlineColor(sf::Color::Black);
         block.setOutlineThickness(1.f);
@@ -56,7 +57,7 @@ void ProcessUI::draw(sf::RenderWindow& window) {
 void ProcessUI::initText(sf::Text& text, const std::string& str, float x, float y) {
     text.setFont(font);
     text.setString(str);
-    text.setCharacterSize(16);
+    text.setCharacterSize(CHAR_SIZE);
     text.setFillColor(sf::Color::White);
     text.setPosition(x, y);
 }

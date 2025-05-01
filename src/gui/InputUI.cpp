@@ -1,18 +1,17 @@
 #include "gui/InputUI.h"
+#include "gui/Layout.h"
 #include <iostream>
 
 InputUI::InputUI(sf::Font& font, sf::Vector2f ws)
   : font(font), winSize(ws)
 {
-    // Prompt
     promptText.setFont(font);
     promptText.setString("Processes:");
     promptText.setCharacterSize(24);
     promptText.setFillColor(sf::Color::White);
     promptText.setPosition(50, 50);
 
-    // Count box
-    countBox.setSize({200, 50});
+    countBox.setSize({FIELD_WIDTH, FIELD_HEIGHT});
     countBox.setPosition(200, 40);
     countBox.setFillColor(sf::Color::Black);
     countBox.setOutlineColor(sf::Color::White);
@@ -20,23 +19,23 @@ InputUI::InputUI(sf::Font& font, sf::Vector2f ws)
 
     countText.setFont(font);
     countText.setString("");
-    countText.setCharacterSize(24);
+    countText.setCharacterSize(CHAR_SIZE);
     countText.setFillColor(sf::Color::White);
-    countText.setPosition(countBox.getPosition() + sf::Vector2f(5,5));
+    countText.setPosition(countBox.getPosition().x + PADDING, countBox.getPosition().y + (FIELD_HEIGHT - CHAR_SIZE) / 2);
 
-    // Go button
-    goButton.setSize({80,50});
-    goButton.setPosition(countBox.getPosition() + sf::Vector2f(220,0));
+    goButton.setSize({80, FIELD_HEIGHT});
+    goButton.setPosition(countBox.getPosition() + sf::Vector2f(FIELD_WIDTH + 20, 0));
     goButton.setFillColor(sf::Color::White);
     goButton.setOutlineColor(sf::Color::Black);
     goButton.setOutlineThickness(1);
 
     goText.setFont(font);
     goText.setString("Go");
-    goText.setCharacterSize(24);
+    goText.setCharacterSize(CHAR_SIZE);
     goText.setFillColor(sf::Color::Black);
-    goText.setPosition(goButton.getPosition()+sf::Vector2f(15,10));
+    goText.setPosition(goButton.getPosition().x + 15, goButton.getPosition().y + (FIELD_HEIGHT - CHAR_SIZE) / 2);
 }
+
 
 void InputUI::handleEvent(const sf::Event& event) {
     if (event.type == sf::Event::MouseButtonPressed) {
@@ -112,21 +111,21 @@ void InputUI::commitCount() {
 
 void InputUI::createFields() {
     fields.clear();
-    const float x=50, y0=120, rowH=60;
+    const float x=50, y0=120;
     for(int r=0;r<numProcesses;++r){
         for(int c=0;c<3;++c){
             Field f;
             f.row=r; f.col=c;
             float xpos = (c==0?x+40: c==1?x+140: x+280);
-            f.box.setSize({80,40});
-            f.box.setPosition(xpos, y0+r*rowH+10);
+            f.box.setSize({FIELD_WIDTH, FIELD_HEIGHT});
+            f.box.setPosition(xpos, y0+r*ROW_HEIGHT);
             f.box.setFillColor(sf::Color::Black);
             f.box.setOutlineColor(sf::Color::White);
             f.box.setOutlineThickness(1);
             f.text.setFont(font);
-            f.text.setCharacterSize(20);
+            f.text.setCharacterSize(CHAR_SIZE);
             f.text.setFillColor(sf::Color::White);
-            f.text.setPosition(f.box.getPosition()+sf::Vector2f(5,5));
+            f.text.setPosition(f.box.getPosition().x + PADDING, f.box.getPosition().y + (FIELD_HEIGHT - CHAR_SIZE) / 2);
             updateField(f);
             fields.push_back(f);
         }

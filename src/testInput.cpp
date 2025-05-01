@@ -1,30 +1,22 @@
 #include <SFML/Graphics.hpp>
-#include "gui/InputUI.h"
+#include "gui/UIController.h"
 
-int main() {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "InputUI Test");
-    window.setFramerateLimit(60);
+int main(){
+    sf::RenderWindow window({1200,600}, "Scheduling Algorithm Simulator");
+    UIController ui;
+    ui.initialize();
 
-    sf::Font font;
-    if (!font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")) {
-        return -1;
-    }
-
-    InputUI inputUI(font, sf::Vector2f(800, 600));
-
-    while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                window.close();
-
-            inputUI.handleEvent(event);
+    while(window.isOpen()){
+        sf::Event ev;
+        while(window.pollEvent(ev)){
+            if(ev.type == sf::Event::Closed) window.close();
+            ui.handleEvent(ev);
         }
+        ui.update();
 
         window.clear(sf::Color::Black);
-        inputUI.draw(window);
+        ui.render(window);
         window.display();
     }
-
     return 0;
 }

@@ -1,66 +1,67 @@
-#include <SFML/Graphics.hpp>
 #include "gui/UIController.h"
+#include <iostream>
 
+UIController::UIController()
+  : inputUI(font, {800,600})
+  , processManager(50, 100, font)
+  , dropdown(
+        { processManager.getHeaderX(3),
+          processManager.getRowsY() - 50},
+        processManager.getHeaderWidth(3),
+        { "First Come First Served",
+          "Shortest Job First",
+          "Priority",
+          "Round Robin",
+          "Priority RR"
+        },
+        font
+    )
+{}
 
-void UIController::handleEvent(const sf::Event& event, sf::Vector2f mousePos) {
-    switch (status) {
-        case AppStatus::START_SCREEN:
-            start.handleEvent(event, mousePos);
-            if (start.isReady()) { // e.g., returns true when "Start" button clicked
-                status = AppStatus::INPUT_PROCESS_COUNT;
-            }
-            break;
+UIController::~UIController() {
+    for (auto p : processes) delete p;
+}
 
-        case AppStatus::INPUT_PROCESS_COUNT:
-            inputUI.doInputUIState(event);
-            if (inputUI.readyToInputData()) {
-                status = AppStatus::INPUT_PROCESS_DATA;
-            }
-            break;
+void UIController::initialize() {
+    if (!font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")) {
+        std::cerr << "Failed to load font\n";
+    }
+}
 
-        case AppStatus::INPUT_PROCESS_DATA:
-            inputUI.handleEvent(event, mousePos);
-            if (inputUI.isInputComplete()) {
-                status = AppStatus::SELECT_ALGORITHM;
-            }
-            break;
+void UIController::handleEvent(const sf::Event& event) {
+    // global mouse pos
+    sf::Vector2f mp(
+      (float)sf::Mouse::getPosition().x,
+      (float)sf::Mouse::getPosition().y
+    );
+    inputUI.handleEvent(event);
+    dropdown.handleEvent(const_cast<sf::Event&>(event), mp);
+}
 
-        case AppStatus::SELECT_ALGORITHM:
-            dropdownMenu.handleEvent(event, mousePos);
-            if (dropdownMenu.isAlgorithmSelected()) {
-                status = AppStatus::RUNNING;
-            }
-            break;
-
-        case AppStatus::RUNNING:
-            processUIManager.run(inputUI.getProcessValues(), dropdownMenu.getSelectedAlgorithm());
-            status = AppStatus::DONE;
-            break;
-
-        case AppStatus::DONE:
-            // maybe wait for restart or quit
-            break;
-
-        default: break;
+void UIController::update() {
+    if (!processesLaunched && inputUI.isInputComplete()) {
+        launchProcesses();
+        processesLaunched = true;
     }
 }
 
 void UIController::render(sf::RenderWindow& window) {
-    switch (status) {
-        case AppStatus::START_SCREEN:
-            start.draw(window);
-            break;
-        case AppStatus::INPUT_PROCESS_COUNT:
-        case AppStatus::INPUT_PROCESS_DATA:
-            inputUI.draw(window);
-            break;
-        case AppStatus::SELECT_ALGORITHM:
-            dropdownMenu.draw(window);
-            break;
-        case AppStatus::RUNNING:
-        case AppStatus::DONE:
-            processUIManager.draw(window);
-            break;
-        default: break;
+    dropdown.draw(window);
+    inputUI.draw(window);
+    processManager.draw(window);
+}
+
+void UIController::launchProcesses() {
+    for (auto p : processes) delete p;
+    processes.clear();
+
+    auto vals = inputUI.getProcessValues();
+    processes.reserve(vals.size());
+    for (size_t i = 0; i < vals.size(); ++i) {
+        const auto& v = vals[i];
+        processes.push_back(new Process(
+            int(i), v.arrival, v.burstTime, v.priority
+        ));
     }
+    processManager.setProcesses(processes);
 }

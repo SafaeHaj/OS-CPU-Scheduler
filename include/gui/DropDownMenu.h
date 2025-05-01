@@ -20,5 +20,6 @@ public:
 
     void handleEvent(sf::Event& event, sf::Vector2f mousePos);
     void draw(sf::RenderWindow& window);
+    void setPosition(sf::Vector2f pos);
     std::string getSelectedItem() const;
 };
