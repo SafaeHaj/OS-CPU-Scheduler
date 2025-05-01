@@ -1,21 +1,52 @@
+#pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <string>
+
+struct ProcessInput {
+    int priority;
+    int burstTime;
+    int arrival;
+};
 
 class InputUI {
 public:
-    InputUI();
-    void draw(sf::RenderWindow& window);
-    void handleEvent(sf::Event& event, sf::Vector2f mousePos);
+    InputUI(sf::Font& font, sf::Vector2f winSize);
+    void draw(sf::RenderWindow& win);
+    void handleEvent(const sf::Event& ev, sf::Vector2f mousePos);
     bool isInputComplete() const;
-    std::vector<int> getProcessValues() const;
+    std::vector<ProcessInput> getProcessValues() const;
 
 private:
-    int numProcesses = 0;
+    enum Field { PRIORITY, BURST, ARRIVAL };
+
+    sf::Font& font;
+    sf::Vector2f windowSize;
+
     sf::RectangleShape inputBox;
-    sf::Text inputText;
-    bool focused = false;
+    sf::Text label;
     std::string buffer;
 
-    void updateText();
-    bool isNumber(const std::string& str);
+    int numProcesses = 0;
+    int currentRow = 0;
+    Field currentField = PRIORITY;
+
+    std::vector<ProcessInput> results;
+
+    sf::RectangleShape countBox;
+    sf::Text countText;
+    std::string countBuffer;
+
+    enum class Status { IDLE, INPUTUI, INPUT, DONE };
+    Status status = Status::IDLE;
+
+    void updateDisplay();
+    bool validateAndStore();
+    void nextFieldOrRow();
+    void displayError(const std::string& msg);
+
+    // layout config
+    float baseY = 200;
+    float rowHeight = 50;
+    float xStart = 100;
 };

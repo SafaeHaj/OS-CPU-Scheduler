@@ -1,25 +1,31 @@
+#pragma once
 #include <SFML/Graphics.hpp>
+#include "gui/InputUI.h"
 
 enum class Status {
-    START,
-    INPUT,
-    RUNNING,
-    DONE,
+    IDLE,   
+    RUNNING, // simulation
+    DONE
 };
 
 class Start {
 public:
-    Start();
-    Status status = Status::START;
+    Start(sf::Font& font, sf::Vector2f windowSize);
 
-    void run(); // dispatch flow based on current status
+    // Called every frame from main()
+    void handleEvent(const sf::Event& event);
+    void update();         // advance state machine
     void draw(sf::RenderWindow& window);
-    void handleEvent(sf::Event& event, sf::Vector2f mousePos);
 
-    void reset(); // reset state if invalid input or restart requested
+    Status getStatus() const { return status; }
 
 private:
-    sf::RectangleShape startButton;
-    sf::Text startText;
-    bool buttonPressed(sf::Vector2f mousePos);
+    Status     status = Status::IDLE;
+    sf::Font&  font;
+   
+    // --- Shared helper ---
+    void displayError(const std::string& msg);
+
+    // Internal state‐handlers
+    void doStartState(const sf::Event& ev);
 };

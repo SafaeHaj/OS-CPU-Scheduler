@@ -9,12 +9,14 @@ DropDownMenu::DropDownMenu(sf::Vector2f pos, float width, std::vector<std::strin
 {
     baseButton.setSize(sf::Vector2f(width, itemHeight));
     baseButton.setPosition(pos);
-    baseButton.setFillColor(sf::Color::White);
+    baseButton.setFillColor(sf::Color::Black);
+    baseButton.setOutlineColor(sf::Color::White);
+    baseButton.setOutlineThickness(1.f);
 
     baseText.setFont(font);
     baseText.setString(selectedItem);
     baseText.setCharacterSize(20);
-    baseText.setFillColor(sf::Color::Black);
+    baseText.setFillColor(sf::Color::White);
     baseText.setPosition(pos.x + 10, pos.y + 10);
 
     for (size_t i = 0; i < options.size(); ++i)
@@ -23,6 +25,8 @@ DropDownMenu::DropDownMenu(sf::Vector2f pos, float width, std::vector<std::strin
         item.setPosition(pos.x, pos.y + itemHeight * (i + 1));
         item.setFillColor(sf::Color::White);
         items.push_back(item);
+        item.setOutlineColor(sf::Color::Black);
+        item.setOutlineThickness(1.f);
 
         sf::Text text;
         text.setFont(font);

@@ -12,7 +12,7 @@ CORE_BIN_DIR = $(BIN_DIR)/core
 GUI_BIN_DIR = $(BIN_DIR)/gui
 
 # Source files
-SRCS = $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(GUI_DIR)/*.cpp) $(wildcard $(CORE_DIR)/*.cpp)
+SRCS = main.cpp $(wildcard $(GUI_DIR)/*.cpp) $(wildcard $(CORE_DIR)/*.cpp)
 OBJS = $(SRCS:.cpp=.o)
 OBJ_PATHS = $(patsubst %.o,$(BUILD_DIR)/%.o,$(notdir $(OBJS)))
 
@@ -21,7 +21,7 @@ TARGET = $(GUI_BIN_DIR)/main
 EXEC = $(CORE_BIN_DIR)/scheduler
 
 # Default target
-all: $(TARGET) $(EXEC)
+all: $(TARGET) 
 
 # Linking
 $(TARGET): $(OBJ_PATHS) | $(GUI_BIN_DIR)
@@ -34,8 +34,8 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
 $(BUILD_DIR)/%.o: $(GUI_DIR)/%.cpp | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(EXEC): $(OBJ)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+# $(EXEC): $(OBJ)
+# 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 # Ensure output directories exist
 $(BUILD_DIR):
