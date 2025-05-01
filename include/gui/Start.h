@@ -1,31 +1,44 @@
-#pragma once
-#include <SFML/Graphics.hpp>
-#include "gui/InputUI.h"
+#ifndef START_H
+#define START_H
 
-enum class Status {
-    IDLE,   
-    RUNNING, // simulation
-    DONE
-};
+#include <SFML/Graphics.hpp>
+#include <memory>
+#include <vector>
+
+// Forward declarations
+class DropDownMenu;
+class InputUI;
+class ProcessUIManager;
+class Process;
+class Scheduler;
 
 class Start {
 public:
-    Start(sf::Font& font, sf::Vector2f windowSize);
-
-    // Called every frame from main()
-    void handleEvent(const sf::Event& event);
-    void update();         // advance state machine
-    void draw(sf::RenderWindow& window);
-
-    Status getStatus() const { return status; }
+    Start(sf::Font& font, DropDownMenu& d, InputUI& ui, ProcessUIManager& mgr, std::vector<Process*>& procList);
+    
+    void draw(sf::RenderWindow& win);
+    void handleEvent(const sf::Event& ev, sf::Vector2f mousePos);
+    void update();
 
 private:
-    Status     status = Status::IDLE;
-    sf::Font&  font;
-   
-    // --- Shared helper ---
-    void displayError(const std::string& msg);
+    void launchSimulation();
 
-    // Internal state‐handlers
-    void doStartState(const sf::Event& ev);
+    // References to external components
+    DropDownMenu& dropdown;
+    InputUI& inputUI;
+    ProcessUIManager& manager;
+    std::vector<Process*>& processes;
+
+    // UI Elements
+    sf::RectangleShape startButton;
+    sf::Text startText;
+
+    // Simulation state
+    bool clicked = false;
+    std::unique_ptr<Scheduler> scheduler;
+    sf::Clock clock;
+    size_t sim_step_index = 0;
+    bool simulation_done = false;
 };
+
+#endif // START_H

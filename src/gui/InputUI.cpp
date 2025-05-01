@@ -152,8 +152,9 @@ void InputUI::draw(sf::RenderWindow& win) {
 
 bool InputUI::isInputComplete() const {
     if (numProcesses==0) return false;
-    for(auto& p:values)
+    for(auto& p:values) {
         if(p.priority<=0||p.burstTime<=0) return false;
+    }
     return true;
 }
 

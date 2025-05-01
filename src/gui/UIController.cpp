@@ -58,6 +58,10 @@ void UIController::launchProcesses() {
     auto vals = inputUI.getProcessValues();
     processes.reserve(vals.size());
     for (size_t i = 0; i < vals.size(); ++i) {
+        std::cout << "Process " << i << ": "
+             << vals[i].arrival << " "
+             << vals[i].burstTime << " "
+             << vals[i].priority << std::endl;
         const auto& v = vals[i];
         processes.push_back(new Process(
             int(i), v.arrival, v.burstTime, v.priority
