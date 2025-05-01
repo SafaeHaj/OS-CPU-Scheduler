@@ -18,7 +18,7 @@ int main() {
             if (event.type == sf::Event::Closed)
                 window.close();
 
-            inputUI.handleEvent(event, sf::Vector2f(0, 0));
+            inputUI.handleEvent(event);
         }
 
         window.clear(sf::Color::Black);

@@ -4,49 +4,46 @@
 #include <string>
 
 struct ProcessInput {
-    int priority;
-    int burstTime;
-    int arrival;
+    int priority = 0;
+    int burstTime = 0;
+    int arrival = 0;
 };
 
 class InputUI {
 public:
-    InputUI(sf::Font& font, sf::Vector2f winSize);
+    InputUI(sf::Font& font, sf::Vector2f windowSize);
+    void handleEvent(const sf::Event& event);
     void draw(sf::RenderWindow& win);
-    void handleEvent(const sf::Event& ev, sf::Vector2f mousePos);
     bool isInputComplete() const;
     std::vector<ProcessInput> getProcessValues() const;
 
 private:
-    enum Field { PRIORITY, BURST, ARRIVAL };
+    struct Field {
+        sf::RectangleShape box;
+        sf::Text            text;
+        std::string         buffer;
+        bool                active = false;
+        int                 row, col;
+    };
 
     sf::Font& font;
-    sf::Vector2f windowSize;
+    sf::Vector2f winSize;
 
-    sf::RectangleShape inputBox;
-    sf::Text label;
-    std::string buffer;
+    // Step 1: enter count
+    sf::Text               promptText;
+    sf::RectangleShape     countBox;
+    sf::Text               countText;
+    std::string            countBuffer;
+    bool                   countActive = false;
+    sf::RectangleShape     goButton;
+    sf::Text               goText;
 
-    int numProcesses = 0;
-    int currentRow = 0;
-    Field currentField = PRIORITY;
+    // Step 2: enter rows
+    int                    numProcesses = 0;
+    std::vector<Field>     fields;
+    std::vector<ProcessInput> values;
 
-    std::vector<ProcessInput> results;
-
-    sf::RectangleShape countBox;
-    sf::Text countText;
-    std::string countBuffer;
-
-    enum class Status { IDLE, INPUTUI, INPUT, DONE };
-    Status status = Status::IDLE;
-
-    void updateDisplay();
-    bool validateAndStore();
-    void nextFieldOrRow();
-    void displayError(const std::string& msg);
-
-    // layout config
-    float baseY = 200;
-    float rowHeight = 50;
-    float xStart = 100;
+    void commitCount();
+    void createFields();
+    void updateField(Field& f);
 };

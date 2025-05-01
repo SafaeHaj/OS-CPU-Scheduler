@@ -1,155 +1,163 @@
 #include "gui/InputUI.h"
 #include <iostream>
 
-InputUI::InputUI(sf::Font& font, sf::Vector2f winSize)
-    : font(font), windowSize(winSize) {
+InputUI::InputUI(sf::Font& font, sf::Vector2f ws)
+  : font(font), winSize(ws)
+{
+    // Prompt
+    promptText.setFont(font);
+    promptText.setString("Processes:");
+    promptText.setCharacterSize(24);
+    promptText.setFillColor(sf::Color::White);
+    promptText.setPosition(50, 50);
 
-    countBox.setSize({100, 40});
-    countBox.setPosition(winSize.x / 2 - 50, 100);
-    countBox.setFillColor(sf::Color::White);
-    countBox.setOutlineColor(sf::Color::Black);
+    // Count box
+    countBox.setSize({200, 50});
+    countBox.setPosition(200, 40);
+    countBox.setFillColor(sf::Color::Black);
+    countBox.setOutlineColor(sf::Color::White);
     countBox.setOutlineThickness(1);
 
     countText.setFont(font);
-    countText.setCharacterSize(20);
-    countText.setFillColor(sf::Color::Black);
-    countText.setPosition(countBox.getPosition() + sf::Vector2f(5, 5));
+    countText.setString("");
+    countText.setCharacterSize(24);
+    countText.setFillColor(sf::Color::White);
+    countText.setPosition(countBox.getPosition() + sf::Vector2f(5,5));
 
-    inputBox.setSize({80, 40});
-    inputBox.setFillColor(sf::Color::White);
-    inputBox.setOutlineColor(sf::Color::Black);
-    inputBox.setOutlineThickness(1);
+    // Go button
+    goButton.setSize({80,50});
+    goButton.setPosition(countBox.getPosition() + sf::Vector2f(220,0));
+    goButton.setFillColor(sf::Color::White);
+    goButton.setOutlineColor(sf::Color::Black);
+    goButton.setOutlineThickness(1);
 
-    label.setFont(font);
-    label.setCharacterSize(20);
-    label.setFillColor(sf::Color::Black);
+    goText.setFont(font);
+    goText.setString("Go");
+    goText.setCharacterSize(24);
+    goText.setFillColor(sf::Color::Black);
+    goText.setPosition(goButton.getPosition()+sf::Vector2f(15,10));
 }
 
-void InputUI::handleEvent(const sf::Event& event, sf::Vector2f) {
-    if (status == Status::IDLE || status == Status::INPUTUI) {
-        if (event.type == sf::Event::TextEntered) {
-            if (std::isdigit(event.text.unicode) && countBuffer.size() < 3) {
-                countBuffer += static_cast<char>(event.text.unicode);
-                countText.setString(countBuffer);
-            } else if (event.text.unicode == '\b' && !countBuffer.empty()) {
+void InputUI::handleEvent(const sf::Event& event) {
+    if (event.type == sf::Event::MouseButtonPressed) {
+        sf::Vector2f mp(event.mouseButton.x, event.mouseButton.y);
+        // Focus fields
+        bool anyField = false;
+        for (auto& f : fields) {
+            if (f.box.getGlobalBounds().contains(mp)) {
+                f.active = true; f.box.setOutlineThickness(3);
+                anyField = true;
+            } else {
+                f.active = false; f.box.setOutlineThickness(1);
+            }
+        }
+        // Focus count
+        if (!anyField && countBox.getGlobalBounds().contains(mp)) {
+            countActive = true;
+        } else if (!anyField && !countBox.getGlobalBounds().contains(mp)) {
+            countActive = false;
+        }
+        // Go button
+        if (goButton.getGlobalBounds().contains(mp)) {
+            commitCount();
+        }
+    }
+
+    if (event.type == sf::Event::TextEntered) {
+        char c = static_cast<char>(event.text.unicode);
+        // Only digits, backspace, enter
+        if (countActive) {
+            if (std::isdigit(c) && countBuffer.size()<2) {
+                countBuffer+=c;
+            } else if (c=='\b' && !countBuffer.empty()) {
                 countBuffer.pop_back();
-                countText.setString(countBuffer);
-            } else if (event.text.unicode == '\r' || event.text.unicode == '\n') {
-                int n = std::stoi(countBuffer.empty() ? "0" : countBuffer);
-                if (n > 0) {
-                    numProcesses = n;
-                    results.assign(n, {0, 0, 0});
-                    currentRow = 0;
-                    currentField = PRIORITY;
-                    status = Status::INPUT;
-                } else {
-                    displayError("Enter a positive number");
-                }
+            } else if ((c=='\r'||c=='\n')) {
+                commitCount();
             }
+            countText.setString(countBuffer);
+            return;
         }
-    } else if (status == Status::INPUT) {
-        if (event.type == sf::Event::TextEntered) {
-            char c = static_cast<char>(event.text.unicode);
-            if (std::isdigit(c) && buffer.size() < 4) {
-                buffer.push_back(c);
-            } else if (c == '\b' && !buffer.empty()) {
-                buffer.pop_back();
-            } else if (c == '\r' || c == '\n') {
-                if (validateAndStore()) {
-                    nextFieldOrRow();
-                    if (currentRow >= numProcesses)
-                        status = Status::DONE;
-                }
+        // Else check fields
+        for (auto& f : fields) if (f.active) {
+            if (std::isdigit(c) && f.buffer.size()<3) {
+                f.buffer+=c;
+            } else if (c=='\b' && !f.buffer.empty()) {
+                f.buffer.pop_back();
+            } else if (c=='\r'||c=='\n') {
+                // commit field
+                int v=std::stoi(f.buffer.empty()?"0":f.buffer);
+                auto& pi = values[f.row];
+                if (f.col==0) pi.priority=v;
+                else if(f.col==1) pi.burstTime=v;
+                else pi.arrival=v;
+                f.active=false;
+                f.box.setOutlineThickness(1);
             }
-            updateDisplay();
+            updateField(f);
+            return;
         }
     }
 }
 
-bool InputUI::validateAndStore() {
-    int v = std::stoi(buffer.empty() ? "0" : buffer);
-    auto& entry = results[currentRow];
-    switch (currentField) {
-        case PRIORITY:   entry.priority = v; break;
-        case BURST:      entry.burstTime = v; break;
-        case ARRIVAL:    entry.arrival = v; break;
+void InputUI::commitCount() {
+    if (countBuffer.empty()) return;
+    int n = std::stoi(countBuffer);
+    if (n>0 && n!=numProcesses) {
+        numProcesses=n;
+        values.assign(n, {});
+        createFields();
     }
-    return true;
+    countActive=false;
 }
 
-void InputUI::nextFieldOrRow() {
-    buffer.clear();
-    if (currentField == ARRIVAL) {
-        currentField = PRIORITY;
-        currentRow++;
-    } else {
-        currentField = static_cast<Field>(int(currentField) + 1);
+void InputUI::createFields() {
+    fields.clear();
+    const float x=50, y0=120, rowH=60;
+    for(int r=0;r<numProcesses;++r){
+        for(int c=0;c<3;++c){
+            Field f;
+            f.row=r; f.col=c;
+            float xpos = (c==0?x+40: c==1?x+140: x+280);
+            f.box.setSize({80,40});
+            f.box.setPosition(xpos, y0+r*rowH+10);
+            f.box.setFillColor(sf::Color::Black);
+            f.box.setOutlineColor(sf::Color::White);
+            f.box.setOutlineThickness(1);
+            f.text.setFont(font);
+            f.text.setCharacterSize(20);
+            f.text.setFillColor(sf::Color::White);
+            f.text.setPosition(f.box.getPosition()+sf::Vector2f(5,5));
+            updateField(f);
+            fields.push_back(f);
+        }
     }
 }
 
-void InputUI::updateDisplay() {
-    float y = baseY + rowHeight * currentRow;
-    float x = xStart;
-
-    switch (currentField) {
-        case PRIORITY: x += 40; break;
-        case BURST:    x += 140; break;
-        case ARRIVAL:  x += 280; break;
-    }
-
-    inputBox.setPosition(x, y);
-    label.setString(buffer);
-    label.setPosition(x + 5, y + 5);
+void InputUI::updateField(Field& f) {
+    f.text.setString(f.buffer);
 }
 
 void InputUI::draw(sf::RenderWindow& win) {
-    if (status == Status::IDLE || status == Status::INPUTUI) {
-        win.draw(countBox);
-        win.draw(countText);
-    } else if (status == Status::INPUT || status == Status::DONE) {
-        for (int i = 0; i < currentRow; ++i) {
-            float y = baseY + rowHeight * i;
-
-            sf::Text pText, bText, aText;
-            pText.setFont(font);
-            bText.setFont(font);
-            aText.setFont(font);
-            pText.setCharacterSize(18);
-            bText.setCharacterSize(18);
-            aText.setCharacterSize(18);
-            pText.setFillColor(sf::Color::Black);
-            bText.setFillColor(sf::Color::Black);
-            aText.setFillColor(sf::Color::Black);
-
-            pText.setString(std::to_string(results[i].priority));
-            pText.setPosition(xStart + 40, y + 15);
-
-            bText.setString(std::to_string(results[i].burstTime) + " ms");
-            bText.setPosition(xStart + 140, y + 15);
-
-            aText.setString(std::to_string(results[i].arrival) + " ms");
-            aText.setPosition(xStart + 280, y + 15);
-
-            win.draw(pText);
-            win.draw(bText);
-            win.draw(aText);
-        }
-
-        if (status == Status::INPUT) {
-            win.draw(inputBox);
-            win.draw(label);
-        }
+    // always draw count UI
+    win.draw(promptText);
+    win.draw(countBox);
+    win.draw(countText);
+    win.draw(goButton);
+    win.draw(goText);
+    // draw fields
+    for(auto& f:fields){
+        win.draw(f.box);
+        win.draw(f.text);
     }
 }
 
 bool InputUI::isInputComplete() const {
-    return status == Status::DONE;
+    if (numProcesses==0) return false;
+    for(auto& p:values)
+        if(p.priority<=0||p.burstTime<=0) return false;
+    return true;
 }
 
 std::vector<ProcessInput> InputUI::getProcessValues() const {
-    return results;
-}
-
-void InputUI::displayError(const std::string& msg) {
-    std::cerr << "Error: " << msg << std::endl;
+    return values;
 }
