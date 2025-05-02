@@ -34,8 +34,9 @@ OS-CPU-Scheduler/
 │   ├── core/            # Implementation files for scheduling algorithms
 │   ├── main.cpp         # Terminal-based visualization
 │   └── InputHandler.cpp # Implementation of input utilities
+│   └── Process.cpp      # Implementation of Process.h
 ├── test/                # Test input files
-│   └── processes.txt    # Sample process data
+│   └── processes.txt    # Sample process data (named 1.txt, 2.txt, 3.txt in repository)
 ├── Makefile             # Build configuration
 └── README.md            # Project documentation
 ```
@@ -61,8 +62,6 @@ To run the CPU scheduler visualization:
 ## Features
 
 ### GUI-Based Visualization with SFML C++ Library
-
-### GUI Development Journey
 
 The project initially explored graphical visualization using the SFML C++ library. While early prototypes showed promising results (available in the `gui/` directories), we ultimately prioritized the terminal-based approach for:
 
