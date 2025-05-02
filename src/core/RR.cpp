@@ -2,6 +2,11 @@
 #include <algorithm>
 #include <iostream>
 
+RR::RR(int quantum) : time_quantum(quantum) {}
+std::string RR::getName() const {
+    return "Round Robin (TQ=" + std::to_string(time_quantum) + ")";
+}
+
 void RR::schedule() {
     std::queue<Process*> ready_queue;
     std::size_t idx = 0;
@@ -28,7 +33,7 @@ void RR::schedule() {
         Process* p = ready_queue.front();
         ready_queue.pop();
 
-        int exec_time = std::min(time_quantum, p->getRemainingTime());
+        int exec_time = std::min(time_quantum, static_cast<int>(p->getRemainingTime()));
         timeline.emplace_back(p->getId(), current_time, current_time + exec_time);
 
         // Update remaining time

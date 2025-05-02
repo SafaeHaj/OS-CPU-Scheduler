@@ -3,6 +3,12 @@
 #include <iostream>
 #include <limits>
 
+PriorityRR::PriorityRR(int quantum) : time_quantum(quantum) {}
+
+std::string PriorityRR::getName() const {
+    return "Priority Round Robin (TQ=" + std::to_string(time_quantum) + ")";
+}
+
 void PriorityRR::schedule() {
     // Sort processes by arrival time
     std::sort(processes.begin(), processes.end(), 

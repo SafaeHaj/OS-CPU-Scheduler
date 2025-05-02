@@ -2,6 +2,10 @@
 #include <algorithm>
 #include <iostream>
 
+std::string Priority::getName() const {
+    return "Priority Scheduling";
+}
+
 void Priority::schedule() {
     // Sort processes by arrival time
     std::sort(processes.begin(), processes.end(), 
@@ -142,4 +146,8 @@ void Priority::print_gantt_chart() {
                   << std::get<1>(entry) << "-" << std::get<2>(entry) << " | ";
     }
     std::cout << "\n";
+}
+
+bool Priority::PriorityComparator::operator()(const Process* a, const Process* b) const {
+    return a->getPriority() > b->getPriority();
 }

@@ -2,6 +2,11 @@
 #include <algorithm>
 #include <iostream>
 
+std::string FCFS::getName() const {
+    return "First Come First Served";
+}
+
+
 void FCFS::schedule() {
     // Sort processes by arrival time
     std::sort(processes.begin(), processes.end(), 

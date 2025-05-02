@@ -168,8 +168,8 @@ void drawFinishedTable(const std::vector<Process> &finished, int startLine, int 
     for (size_t i = 0; i < finished.size(); ++i)
     {
         std::cout << "\033[" << startLine + 3 + i << ";" << startCol << "H";
-        std::cout << "│ P" << std::left << std::setw(12) << finished[i].id
-                  << "│ " << std::setw(13) << finished[i].getTurnaroundTime()
+        std::cout << "│ P" << std::left << std::setw(13) << finished[i].id
+                  << "│ " << std::setw(14) << finished[i].getTurnaroundTime()
                   << "│ " << std::setw(12) << finished[i].getWaitingTime() << " │";
     }
 

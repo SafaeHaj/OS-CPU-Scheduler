@@ -9,7 +9,7 @@ OBJ_DIR = build
 SRCS := $(shell find $(SRC_DIR) -type f -name '*.cpp' ! -path "*/gui/*")
 OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 
-TARGET = bin/cpu_scheduler_cli
+TARGET = bin/app
 
 $(TARGET): $(OBJS)
 	@mkdir -p $(dir $@)

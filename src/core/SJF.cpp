@@ -2,6 +2,10 @@
 #include <algorithm>
 #include <iostream>
 
+std::string SJF::getName() const {
+    return "Shortest Job First";
+}
+
 void SJF::schedule() {
     // Sort processes by arrival time
     std::sort(processes.begin(), processes.end(), 
@@ -133,6 +137,10 @@ bool SJF::step() {
     }
     
     return false; // Simulation not complete yet
+}
+
+bool SJF::SJFComparator::operator()(const Process* a, const Process* b) const {
+    return a->getRemainingTime() > b->getRemainingTime();
 }
 
 void SJF::print_gantt_chart() {
