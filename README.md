@@ -60,6 +60,19 @@ To run the CPU scheduler visualization:
 
 ## Features
 
+### GUI-Based Visualization with SFML C++ Library
+
+### GUI Development Journey
+
+The project initially explored graphical visualization using the SFML C++ library. While early prototypes showed promising results (available in the `gui/` directories), we ultimately prioritized the terminal-based approach for:
+
+- More reliable cross-platform compatibility
+- Simplified implementation focusing on algorithm correctness
+- Better integration with the core scheduling components
+- Enhanced development efficiency
+
+The terminal-based visualization still provides comprehensive visual feedback while maintaining the educational value of the scheduling demonstrations.
+
 ### Terminal-Based Visualization
 
 The project includes a terminal-based visualization system that:
