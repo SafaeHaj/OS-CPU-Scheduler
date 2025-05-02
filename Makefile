@@ -1,57 +1,67 @@
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -Wall -Iinclude -Isrc/gui
+CXXFLAGS = -Wall -Wextra -Iinclude -std=c++17
 
 # Directories
 SRC_DIR = src
-CORE_DIR = src/core
-GUI_DIR = src/gui
+CORE_DIR = $(SRC_DIR)/core
 BUILD_DIR = build
+BUILD_CORE_DIR = $(BUILD_DIR)/core
 BIN_DIR = bin
-CORE_BIN_DIR = $(BIN_DIR)/core
-GUI_BIN_DIR = $(BIN_DIR)/gui
 
 # Source files
-SRCS = main.cpp $(wildcard $(GUI_DIR)/*.cpp) $(wildcard $(CORE_DIR)/*.cpp)
-OBJS = $(SRCS:.cpp=.o)
-OBJ_PATHS = $(patsubst %.o,$(BUILD_DIR)/%.o,$(notdir $(OBJS)))
+MAIN_SRC = $(SRC_DIR)/main.cpp
+CORE_SRCS = $(wildcard $(CORE_DIR)/*.cpp)
+OTHER_SRCS = $(filter-out $(MAIN_SRC),$(wildcard $(SRC_DIR)/*.cpp))
+
+# Object files
+MAIN_OBJ = $(BUILD_DIR)/main.o
+CORE_OBJS = $(patsubst $(CORE_DIR)/%.cpp,$(BUILD_CORE_DIR)/%.o,$(CORE_SRCS))
+OTHER_OBJS = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(OTHER_SRCS))
+ALL_OBJS = $(MAIN_OBJ) $(CORE_OBJS) $(OTHER_OBJS)
 
 # Executable name
-TARGET = $(GUI_BIN_DIR)/main
-EXEC = $(CORE_BIN_DIR)/scheduler
+EXEC = $(BIN_DIR)/scheduler
 
 # Default target
-all: $(TARGET) 
+all: $(EXEC)
 
 # Linking
-$(TARGET): $(OBJ_PATHS) | $(GUI_BIN_DIR)
-	$(CXX) $^ -o $@ -lsfml-graphics -lsfml-window -lsfml-system
+$(EXEC): $(ALL_OBJS) | $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) $^ -o $@
 
-# Compilation
+# Compilation rules
+$(MAIN_OBJ): $(MAIN_SRC) | $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BUILD_CORE_DIR)/%.o: $(CORE_DIR)/%.cpp | $(BUILD_CORE_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-$(BUILD_DIR)/%.o: $(GUI_DIR)/%.cpp | $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-# $(EXEC): $(OBJ)
-# 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 # Ensure output directories exist
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
+$(BUILD_CORE_DIR): | $(BUILD_DIR)
+	mkdir -p $(BUILD_CORE_DIR)
+
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
-
-$(CORE_BIN_DIR):
-	mkdir -p $(CORE_BIN_DIR)
-
-$(GUI_BIN_DIR):
-	mkdir -p $(GUI_BIN_DIR)
 
 # Clean
 clean:
 	rm -rf $(BUILD_DIR) $(BIN_DIR)
 
-.PHONY: all clean
+# Debug - print variables
+debug:
+	@echo "MAIN_SRC: $(MAIN_SRC)"
+	@echo "CORE_SRCS: $(CORE_SRCS)"
+	@echo "OTHER_SRCS: $(OTHER_SRCS)"
+	@echo "MAIN_OBJ: $(MAIN_OBJ)"
+	@echo "CORE_OBJS: $(CORE_OBJS)"
+	@echo "OTHER_OBJS: $(OTHER_OBJS)"
+	@echo "ALL_OBJS: $(ALL_OBJS)"
+
+.PHONY: all clean debug

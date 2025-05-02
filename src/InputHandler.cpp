@@ -72,18 +72,14 @@ std::vector<Process> InputHandler::generateRandomProcesses(int count,
         int burst = burst_dist(gen);
         int priority = priority_dist(gen);
         
-        processes.emplace_back(i + 1, arrival, burst, priority);
+        processes.emplace_back(i, arrival, burst, priority); // Using zero-based IDs
     }
 
     // Sort by arrival time for consistency
     std::sort(processes.begin(), processes.end(),
         [](const Process& a, const Process& b) {
-            return a.arrival_time() < b.arrival_time();
+            return a.getArrivalTime() < b.getArrivalTime();
         });
 
     return processes;
-}
-
-std::vector<Process> InputHandler::readGUI() {
-    // wip
 }

@@ -1,5 +1,10 @@
+#include "core/Scheduler.h"
+#include "core/FCFS.h"
+#include "core/SJF.h"
+#include "core/Priority.h"
+#include "core/RR.h"
+#include "core/PriorityRR.h"
 #include "gui/Start.h"
-#include "Scheduler.h" // Include your scheduler implementations here
 #include "gui/Layout.h"
 #include "gui/DropDownMenu.h"
 #include "gui/InputUI.h"

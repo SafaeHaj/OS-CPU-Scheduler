@@ -3,6 +3,7 @@
 #include "gui/InputUI.h"
 #include "gui/DropDownMenu.h"
 #include "gui/ProcessUIManager.h"
+#include "gui/Start.h"
 #include "Process.h"
 
 class UIController {
@@ -17,7 +18,6 @@ public:
 
 private:
     sf::Font font;
-
     InputUI         inputUI;
     DropDownMenu    dropdown;
     ProcessUIManager processManager;

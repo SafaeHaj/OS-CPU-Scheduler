@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <string>
 #include "Process.h"
 
 struct Metrics {
@@ -17,10 +18,15 @@ protected:
 public:
     Metrics metrics;
     std::vector<Process> processes;
-
-    virtual void print_gantt_chart() = 0;
+    
+    virtual ~Scheduler() = default;
+    virtual std::string getName() const = 0;
     virtual void schedule() = 0;
-
+    virtual void print_gantt_chart() = 0;
+    
+    virtual bool step() = 0;  // Return true if simulation is complete
+    virtual bool init() = 0;  // Initialize the simulation
+    
     void run_simulation();
     void calculate_metrics();
 };
