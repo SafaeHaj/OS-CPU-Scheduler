@@ -1,24 +1,80 @@
 #include "Process.h"
 
-Process::Process(int id, int at, int bt, int prio)
-    : id(id), arrival_time(at), burst_time(bt),
-      priority(prio), remaining_time(bt),
-      waiting_time(0), turnaround_time(0), completion_time(0) {}
+Process::Process(int id, int arrival_time, int burst_time, int priority)
+    : id(id), arrival_time(arrival_time), burst_time(burst_time), priority(priority),
+      remaining_time(burst_time), waiting_time(0), turnaround_time(0),
+      completion_time(0), current_progress(0)
+{
+    name = "P" + std::to_string(id);
+}
 
-// Getter implementations
-int Process::getId() const { return id; }
-int Process::getArrivalTime() const { return arrival_time; }
-int Process::getBurstTime() const { return burst_time; }
-int Process::getPriority() const { return priority; }
-int Process::getRemainingTime() const { return remaining_time; }
-int Process::getWaitingTime() const { return waiting_time; }
-int Process::getTurnaroundTime() const { return turnaround_time; }
-int Process::getCompletionTime() const { return completion_time; }
+bool Process::isDone() const 
+{
+    return remaining_time <= 0;
+}
 
-// Setter implementations
-void Process::setRemainingTime(int rt) { remaining_time = rt; }
-void Process::updateWaitingTime(int wt) { waiting_time += wt; }
-void Process::setCompletionTime(int ct) {
-    completion_time = ct;
-    turnaround_time = completion_time - arrival_time;
+void Process::step(int amount)
+{
+    current_progress += amount;
+    remaining_time = burst_time - current_progress;
+}
+
+int Process::getTurnaroundTime() const 
+{
+    return completion_time - arrival_time;
+}
+
+int Process::getWaitingTime() const 
+{
+    return getTurnaroundTime() - burst_time;
+}
+
+int Process::getArrivalTime() const 
+{
+    return arrival_time;
+}
+
+int Process::getBurstTime() const 
+{
+    return burst_time;
+}
+
+int Process::getPriority() const 
+{
+    return priority;
+}
+
+int Process::getId() const 
+{
+    return id;
+}
+
+int Process::getRemainingTime() const 
+{
+    return remaining_time;
+}
+
+int Process::getCompletionTime() const 
+{
+    return completion_time;
+}
+
+void Process::setRemainingTime(int time) 
+{
+    remaining_time = time;
+}
+
+void Process::setCompletionTime(int time) 
+{
+    completion_time = time;
+}
+
+void Process::setTurnaroundTime(int time) 
+{
+    turnaround_time = time;
+}
+
+void Process::setWaitingTime(int time) 
+{
+    waiting_time = time;
 }
