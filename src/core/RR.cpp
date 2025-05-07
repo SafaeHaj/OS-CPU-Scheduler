@@ -58,9 +58,8 @@ bool RR::init() {
             return a.getArrivalTime() < b.getArrivalTime();
         });
     
-    // Clear queue
-    std::queue<Process*> empty;
-    std::swap(ready_queue, empty);
+    // Clear queue and reset simulation
+    while (!ready_queue.empty()) ready_queue.pop();
     
     current_time = 0;
     next_arrival_idx = 0;

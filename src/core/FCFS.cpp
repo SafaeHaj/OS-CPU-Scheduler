@@ -42,6 +42,7 @@ bool FCFS::init() {
     
     current_time = 0;
     current_process_idx = 0;
+    current_process = nullptr;
     simulation_started = true;
     
     // Set current process if one is available at time 0
@@ -57,7 +58,7 @@ bool FCFS::step() {
         init();
     }
     
-    if (current_process_idx >= processes.size()) {
+    if (current_process_idx >= processes.size() && !current_process) {
         return true; // Simulation complete
     }
     
@@ -77,22 +78,21 @@ bool FCFS::step() {
         
         // If process complete, move to next one
         if (current_process->isDone()) {
+            // Process is done, update metrics
             current_process->setCompletionTime(current_time);
             current_process->setTurnaroundTime(current_process->getCompletionTime() - current_process->getArrivalTime());
             current_process->setWaitingTime(current_process->getTurnaroundTime() - current_process->getBurstTime());
             
+            // Move to next process
             current_process_idx++;
-            if (current_process_idx < processes.size()) {
-                // Set next process if available
-                if (processes[current_process_idx].getArrivalTime() <= current_time) {
-                    current_process = &processes[current_process_idx];
-                } else {
-                    current_process = nullptr; // Will wait for next arrival
-                }
-            } else {
+            
+            // Check if simulation is complete
+            if (current_process_idx > processes.size()) {
                 current_process = nullptr;
                 return true; // Simulation complete
             }
+            
+            current_process = &processes[current_process_idx];
         }
     }
     

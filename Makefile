@@ -22,3 +22,10 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 .PHONY: clean
 clean:
 	rm -rf $(OBJ_DIR) $(TARGET)
+
+
+
+run: all
+	@echo "Starting in new terminal..."
+	gnome-terminal -- ./bin/app  # Linux
+
