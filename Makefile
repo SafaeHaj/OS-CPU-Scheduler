@@ -1,23 +1,31 @@
-# Compiler and flags
 CXX = g++
-CXXFLAGS = -Wall -Iinclude
+CXXFLAGS = -std=c++17 -Wall -Iinclude
+LDFLAGS = 
 
-# Directories
-INCLUDE_DIR = include
 SRC_DIR = src
-BIN_DIR = bin
+OBJ_DIR = build
 
-# Search paths for header and source files
-vpath %.h $(INCLUDE_DIR)
-vpath %.cpp $(SRC_DIR)
+# Find all .cpp files not in gui directories
+SRCS := $(shell find $(SRC_DIR) -type f -name '*.cpp' ! -path "*/gui/*")
+OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
 
-# Source files and object files
-SRCS = $(wildcard $(SRC_DIR)/*.cpp)
-OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(BIN_DIR)/%.o)
+TARGET = bin/app
 
+$(TARGET): $(OBJS)
+	@mkdir -p $(dir $@)
+	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
 
-# Clean up
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+.PHONY: clean
 clean:
-	rm -rf $(BIN_DIR)
+	rm -rf $(OBJ_DIR) $(TARGET)
 
-.PHONY: all clean
+
+
+run: all
+	@echo "Starting in new terminal..."
+	gnome-terminal -- ./bin/app  # Linux
+

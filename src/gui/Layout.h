@@ -1,0 +1,9 @@
+constexpr float FIELD_HEIGHT = 50.f;
+constexpr float FIELD_WIDTH  = 150.f;
+constexpr float PADDING      = 10.f;
+constexpr unsigned int CHAR_SIZE = 20;
+constexpr float ROW_HEIGHT   = 60.f;
+constexpr float HEADER_HEIGHT = 40.f;
+constexpr float SIM_WIDTH     = 400.f;
+constexpr float TIME_WIDTH    = 80.f;
+constexpr float COLUMN_GAP    = 5.f;
