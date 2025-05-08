@@ -9,6 +9,8 @@
 
  #pragma once
  #include "Scheduler.h"
+ #include "Process.h"
+ #include <queue>
  
  /**
   * @class FCFS
@@ -19,10 +21,27 @@
   */
  class FCFS : public Scheduler {
  private:
-     size_t current_process_idx = 0;     ///< Index of currently executing process
+      /**
+      * @struct FCFSComparator
+      * @brief Comparison function for the queue
+      *
+      * This comparator ensures that processes with lower arrival times
+      * have higher precedence in the queue.
+      */
+     struct FCFSComparator {
+        /**
+         * @brief Compare two processes based on arrival time
+         * @param a First process
+         * @param b Second process
+         * @return true if a has lower arrival time than b, false otherwise
+         */
+        bool operator()(const Process* a, const Process* b) const;
+    };
+     size_t next_arrival_idx = 0;     ///< Index of currently executing process
      bool simulation_started = false;    ///< Flag indicating if simulation has started
      Process* current_process = nullptr; ///< Pointer to the currently executing process
- 
+     std::priority_queue<Process*, std::vector<Process*>, FCFSComparator> ready_queue;
+
  public:
      /**
       * @brief Get the name of the algorithm

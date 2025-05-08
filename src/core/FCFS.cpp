@@ -7,20 +7,25 @@ std::string FCFS::getName() const {
 }
 
 bool FCFS::init() {
-    // Sort processes by arrival time
-    std::sort(processes.begin(), processes.end(), 
-        [](const Process& a, const Process& b) {
-            return a.getArrivalTime() < b.getArrivalTime();
-        });
+    // Clear queue
+    while (!ready_queue.empty()) ready_queue.pop();
     
     current_time = 0;
-    current_process_idx = 0;
+    next_arrival_idx = 0;
     current_process = nullptr;
     simulation_started = true;
     
-    // Set current process if one is available at time 0
-    if (!processes.empty() && processes[0].getArrivalTime() <= current_time) {
-        current_process = &processes[current_process_idx];
+    // Add processes that arrive at time 0
+    while (next_arrival_idx < processes.size() && 
+           processes[next_arrival_idx].getArrivalTime() <= current_time) {
+        ready_queue.push(&processes[next_arrival_idx]);
+        next_arrival_idx++;
+    }
+    
+    // Get the first process if available
+    if (!ready_queue.empty()) {
+        current_process = ready_queue.top();
+        ready_queue.pop();
     }
     
     return true;
@@ -30,16 +35,28 @@ bool FCFS::step() {
     if (!simulation_started) {
         init();
     }
-    
-    if (current_process_idx >= processes.size() && !current_process) {
+
+    // If all processes are done
+    if (next_arrival_idx >= processes.size() && ready_queue.empty() && !current_process) {
         return true; // Simulation complete
     }
     
-    // If no current process or waiting for arrival
-    if (!current_process && current_process_idx < processes.size()) {
-        // Move time forward to next process arrival
-        current_time = processes[current_process_idx].getArrivalTime();
-        current_process = &processes[current_process_idx];
+    // Advance time if no process is ready
+    if (!current_process && ready_queue.empty() && next_arrival_idx < processes.size()) {
+        current_time = processes[next_arrival_idx].getArrivalTime();
+    }
+    
+    // Add any arriving processes
+    while (next_arrival_idx < processes.size() && 
+           processes[next_arrival_idx].getArrivalTime() <= current_time) {
+        ready_queue.push(&processes[next_arrival_idx]);
+        next_arrival_idx++;
+    }
+    
+    // Get next process if needed
+    if (!current_process && !ready_queue.empty()) {
+        current_process = ready_queue.top();
+        ready_queue.pop();
     }
     
     // Process the current job
@@ -49,19 +66,20 @@ bool FCFS::step() {
         
         // If process complete, move to next one
         if (current_process->isDone()) {
-            // Process is done, update metrics
+            // Process complete
             current_process->setCompletionTime(current_time);
-            current_process->setTurnaroundTime(current_process->getCompletionTime() - current_process->getArrivalTime());
-            current_process->setWaitingTime(current_process->getTurnaroundTime() - current_process->getBurstTime());
+            current_process->setTurnaroundTime(current_process->getCompletionTime() - 
+                                               current_process->getArrivalTime());
+            current_process->setWaitingTime(current_process->getTurnaroundTime() - 
+                                            current_process->getBurstTime());
             
-            // Move to next process
-            current_process_idx++;
-            // Check if simulation is complete
-            if (current_process_idx >= processes.size()) { 
-                return true; // Simulation complete
+            // Get next process
+            if (!ready_queue.empty()) {
+                current_process = ready_queue.top();
+                ready_queue.pop();
+            } else {
+                current_process = nullptr;
             }
-            
-            current_process = &processes[current_process_idx];
         }
     }
     
@@ -76,3 +94,9 @@ void FCFS::print_gantt_chart() {
     }
     std::cout << "\n";
 }
+
+
+bool FCFS::FCFSComparator::operator()(const Process* a, const Process* b) const {
+    return a->getArrivalTime() > b->getArrivalTime();
+}
+
