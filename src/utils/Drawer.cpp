@@ -30,7 +30,7 @@ void Drawer::drawProgressBar(const Process &process, int width, int line)
     std::cout << "\033[" << line << ";0H";
 
     // Draw the bar with color
-    std::cout << color << "Process " << std::setw(4) << process.name << " [";
+    std::cout << color << "Process " << std::setw(3) << process.name << " [";
     for (int i = 0; i < filled; ++i)
         std::cout << "█";
     for (int i = filled; i < width; ++i)

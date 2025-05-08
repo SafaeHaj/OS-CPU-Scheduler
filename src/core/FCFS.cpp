@@ -56,10 +56,8 @@ bool FCFS::step() {
             
             // Move to next process
             current_process_idx++;
-            
             // Check if simulation is complete
-            if (current_process_idx >= processes.size()) { // corrected this condition
-                current_process = nullptr;
+            if (current_process_idx >= processes.size()) { 
                 return true; // Simulation complete
             }
             
