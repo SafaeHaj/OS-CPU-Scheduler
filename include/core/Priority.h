@@ -49,14 +49,7 @@
       * @return String "Priority Scheduling"
       */
      std::string getName() const override;
-     
-     /**
-      * @brief Execute the Priority scheduling algorithm
-      *
-      * Selects the process with highest priority when CPU is available.
-      */
-     void schedule() override;
-     
+
      /**
       * @brief Display the Priority Scheduling Gantt chart
       */

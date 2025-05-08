@@ -62,13 +62,6 @@
      virtual std::string getName() const = 0;
  
      /**
-      * @brief Run the scheduling algorithm
-      * 
-      * This method implements the core scheduling logic for the algorithm.
-      */
-     virtual void schedule() = 0;
- 
-     /**
       * @brief Print a Gantt chart of the schedule
       *
       * Displays a visual representation of the schedule showing which process

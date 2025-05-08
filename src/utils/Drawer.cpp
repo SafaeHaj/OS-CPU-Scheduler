@@ -115,7 +115,7 @@ void Drawer::displayComparativeResults(const std::vector<std::pair<std::string, 
             formattedName = formattedName.substr(0, 23) + "...";
         }
 
-        printf("%s│ %-26s │ %14.2f │ %14.2f │ %16.2f%% │\n",
+        printf("%s│ %-28s │ %14.2f │ %14.2f │ %15.2f%% │\n",
                rowColor.c_str(),
                formattedName.c_str(),
                metrics.avg_turnaround_time,

@@ -6,53 +6,6 @@ std::string Priority::getName() const {
     return "Priority Scheduling";
 }
 
-void Priority::schedule() {
-    // Sort processes by arrival time
-    std::sort(processes.begin(), processes.end(), 
-        [](const Process& a, const Process& b) {
-            return a.getArrivalTime() < b.getArrivalTime();
-        });
-
-    // Priority queue for ready processes (sorted by priority)
-    std::priority_queue<Process*, std::vector<Process*>, PriorityComparator> pq;
-    
-    current_time = 0;
-    size_t completed = 0;
-    size_t total_processes = processes.size();
-    size_t idx = 0;
-
-    while (completed != total_processes) {
-        // Add arriving processes to the queue
-        while (idx < total_processes && processes[idx].getArrivalTime() <= current_time) {
-            pq.push(&processes[idx]);
-            idx++;
-        }
-
-        // If no process is ready, advance time
-        if (pq.empty()) {
-            if (idx < total_processes) {
-                current_time = processes[idx].getArrivalTime();
-            }
-            continue;
-        }
-
-        // Get highest priority job
-        Process* p = pq.top();
-        pq.pop();
-
-        // Update timeline (Gantt chart)
-        timeline.emplace_back(p->getId(), current_time, current_time + p->getBurstTime());
-
-        // Calculate process metrics
-        p->setCompletionTime(current_time + p->getBurstTime());
-        p->setTurnaroundTime(p->getCompletionTime() - p->getArrivalTime());
-        p->setWaitingTime(p->getTurnaroundTime() - p->getBurstTime());
-
-        current_time += p->getBurstTime();
-        completed++;
-    }
-}
-
 bool Priority::init() {
     // Sort processes by arrival time
     std::sort(processes.begin(), processes.end(), 

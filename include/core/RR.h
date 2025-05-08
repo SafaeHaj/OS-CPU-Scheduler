@@ -39,11 +39,6 @@
      std::string getName() const override;
      
      /**
-      * @brief Execute the Round Robin scheduling algorithm
-      */
-     void schedule() override;
-     
-     /**
       * @brief Display the Round Robin Gantt chart
       */
      void print_gantt_chart() override;

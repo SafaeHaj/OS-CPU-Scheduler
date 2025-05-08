@@ -6,33 +6,6 @@ std::string FCFS::getName() const {
     return "First Come First Served";
 }
 
-
-void FCFS::schedule() {
-    // Sort processes by arrival time
-    std::sort(processes.begin(), processes.end(), 
-        [](const Process& a, const Process& b) {
-            return a.getArrivalTime() < b.getArrivalTime();
-        });
-
-    current_time = 0;
-    for (auto& p : processes) {
-        // Handle idle time if no process is ready
-        if (current_time < p.getArrivalTime()) {
-            current_time = p.getArrivalTime();
-        }
-
-        // Update timeline (Gantt chart)
-        timeline.emplace_back(p.getId(), current_time, current_time + p.getBurstTime());
-
-        // Calculate process metrics
-        p.setCompletionTime(current_time + p.getBurstTime());
-        p.setTurnaroundTime(p.getCompletionTime() - p.getArrivalTime());
-        p.setWaitingTime(p.getTurnaroundTime() - p.getBurstTime());
-
-        current_time += p.getBurstTime();
-    }
-}
-
 bool FCFS::init() {
     // Sort processes by arrival time
     std::sort(processes.begin(), processes.end(), 
@@ -63,12 +36,10 @@ bool FCFS::step() {
     }
     
     // If no current process or waiting for arrival
-    if (!current_process) {
-        if (current_process_idx < processes.size()) {
-            // Move time forward to next process arrival
-            current_time = processes[current_process_idx].getArrivalTime();
-            current_process = &processes[current_process_idx];
-        }
+    if (!current_process && current_process_idx < processes.size()) {
+        // Move time forward to next process arrival
+        current_time = processes[current_process_idx].getArrivalTime();
+        current_process = &processes[current_process_idx];
     }
     
     // Process the current job
@@ -87,7 +58,7 @@ bool FCFS::step() {
             current_process_idx++;
             
             // Check if simulation is complete
-            if (current_process_idx > processes.size()) {
+            if (current_process_idx >= processes.size()) { // corrected this condition
                 current_process = nullptr;
                 return true; // Simulation complete
             }

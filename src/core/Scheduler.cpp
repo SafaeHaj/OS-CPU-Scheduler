@@ -1,7 +1,6 @@
 #include "core/Scheduler.h"
 
 void Scheduler::run_simulation() {
-    schedule();
     calculate_metrics();
 }
 

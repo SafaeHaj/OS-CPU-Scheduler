@@ -52,13 +52,6 @@
      std::string getName() const override;
      
      /**
-      * @brief Execute the SJF scheduling algorithm
-      *
-      * Selects the process with shortest burst time when CPU is available.
-      */
-     void schedule() override;
-     
-     /**
       * @brief Display the SJF Gantt chart
       */
      void print_gantt_chart() override;

@@ -51,12 +51,7 @@
       * @return String "Priority Round Robin (TQ=X)" where X is time quantum
       */
      std::string getName() const override;
-     
-     /**
-      * @brief Execute the Priority Round Robin scheduling algorithm
-      */
-     void schedule() override;
-     
+
      /**
       * @brief Display the Priority Round Robin Gantt chart
       */

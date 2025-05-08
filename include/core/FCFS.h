@@ -31,13 +31,6 @@
      std::string getName() const override;
      
      /**
-      * @brief Execute the FCFS scheduling algorithm
-      *
-      * Sorts processes by arrival time and executes them in that order.
-      */
-     void schedule() override;
-     
-     /**
       * @brief Display the FCFS Gantt chart
       */
      void print_gantt_chart() override;
